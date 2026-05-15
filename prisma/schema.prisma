@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Artista {
+  id_artista       Int        @id @default(autoincrement())
+  nombre           String     @db.NVarChar(255)
+  apellido         String     @db.NVarChar(255)
+  nombre_artistico String?    @db.NVarChar(255)
+  fecha_nacimiento DateTime?  @db.Date
+  nacionalidad     String?    @db.NVarChar(255)
+  correo           String?    @unique @db.NVarChar(255)
+  contratos        Contrato[]
+  albums           Album[]
+  canciones        Cancion[]
+}
+
+model Contrato {
+  id_contrato          Int       @id @default(autoincrement())
+  fecha_de_inicio      DateTime  @db.Date
+  fecha_de_finalizacion DateTime? @db.Date
+  monto_a_pagar        Decimal   @db.Decimal(18, 2)
+  id_artista           Int
+  artista              Artista   @relation(fields: [id_artista], references: [id_artista])
+}
+
+model GeneroMusical {
+  id_genero        Int       @id @default(autoincrement())
+  nombre_de_genero String    @db.NVarChar(255)
+  albums           Album[]
+  canciones        Cancion[]
+}
+
+model Album {
+  id_album            Int           @id @default(autoincrement())
+  titulo              String        @db.NVarChar(255)
+  numero_de_canciones Int?
+  duracion_total      DateTime?     @db.Time
+  id_artista          Int
+  id_genero           Int
+  artista             Artista       @relation(fields: [id_artista], references: [id_artista])
+  genero              GeneroMusical @relation(fields: [id_genero], references: [id_genero])
+  ventas              Venta[]
+  canciones           Cancion[]
+}
+
+model Cancion {
+  id_cancion         Int           @id @default(autoincrement())
+  titulo             String        @db.NVarChar(255)
+  duracion           DateTime      @db.Time
+  anio_de_lanzamiento Int?
+  id_album           Int?
+  id_artista         Int
+  id_genero          Int
+  id_compositor      Int
+  album              Album?        @relation(fields: [id_album], references: [id_album])
+  artista            Artista       @relation(fields: [id_artista], references: [id_artista])
+  genero             GeneroMusical @relation(fields: [id_genero], references: [id_genero])
+  compositor         Compositor    @relation(fields: [id_compositor], references: [id_compositor])
+}
+
+model Compositor {
+  id_compositor Int       @id @default(autoincrement())
+  nombre        String    @db.NVarChar(255)
+  apellido      String    @db.NVarChar(255)
+  nacionalidad  String?   @db.NVarChar(255)
+  correo        String?   @db.NVarChar(255)
+  canciones     Cancion[]
+}
+
+model Plataforma {
+  id_plataforma         Int     @id @default(autoincrement())
+  nombre                String  @unique @db.NVarChar(100)
+  pago_por_reproduccion Decimal @db.Decimal(10, 6)
+  ventas                Venta[]
+}
+
+model Venta {
+  id_ventas      Int        @id @default(autoincrement())
+  fecha_inicio   DateTime   @db.Date
+  fecha_corte    DateTime?  @db.Date
+  reproducciones Int?       @default(0)
+  ganancia       Decimal?   @default(0) @db.Decimal(18, 2)
+  tipo           String?    @db.NVarChar(50)
+  id_album       Int
+  id_plataforma  Int
+  album          Album      @relation(fields: [id_album], references: [id_album])
+  plataforma     Plataforma @relation(fields: [id_plataforma], references: [id_plataforma])
+}
+
+model Usuario {
+  id_usuario     Int     @id @default(autoincrement())
+  nombre_usuario String  @unique @db.NVarChar(100)
+  contrasena     String  @db.NVarChar(255)
+  correo         String? @db.NVarChar(255)
+  rol            String  @db.NVarChar(50)
+}
