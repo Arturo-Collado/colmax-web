@@ -5,26 +5,26 @@ import { Badge } from "@/components/ui/badge"
 import { ArtistaFormModal } from "./artista-form"
 import { ArtistaAcciones } from "./artista-acciones"
 
-// Definimos el tipo exacto para TypeScript
+// Definimos la estructura exacta para que TypeScript no arroje error
 type Artista = {
   id_artista: number;
   nombre_artistico: string;
   nombre_real: string;
   genero_musical: string;
   estado: string;
-}
+};
 
 export default async function ArtistasPage() {
-  const artistas = await getArtistas()
+  // Obtenemos los datos y le confirmamos a TypeScript qué forma tienen
+  const artistas = await getArtistas() as Artista[];
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Catálogo de Artistas</h1>
-          <p className="text-muted-foreground">Gestiona el talento registrado en la disquera.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Directorio de Artistas</h1>
+          <p className="text-muted-foreground">Gestiona el talento musical registrado en el catálogo de Colmax.</p>
         </div>
-        {/* Componente Modal de Creación */}
         <ArtistaFormModal />
       </div>
 
@@ -36,7 +36,7 @@ export default async function ArtistasPage() {
                 <TableHead className="w-24">ID</TableHead>
                 <TableHead>Nombre Artístico</TableHead>
                 <TableHead>Nombre Real</TableHead>
-                <TableHead>Género</TableHead>
+                <TableHead>Género Musical</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
@@ -44,7 +44,7 @@ export default async function ArtistasPage() {
             <TableBody>
               {artistas.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     No hay artistas registrados.
                   </TableCell>
                 </TableRow>
@@ -61,8 +61,7 @@ export default async function ArtistasPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      {/* Componente Menú Desplegable con las acciones por artista */}
-                      <ArtistaAcciones id={artista.id_artista} nombre={artista.nombre_artistico} />
+                      <ArtistaAcciones id={artista.id_artista} />
                     </TableCell>
                   </TableRow>
                 ))
