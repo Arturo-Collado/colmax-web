@@ -1,6 +1,5 @@
 'use server'
 
-// Definimos la estructura exacta que retorna la acción
 export interface AccionResultado {
   success: boolean;
   error?: string;
@@ -14,10 +13,16 @@ export async function getArtistas() {
   ];
 }
 
+export async function guardarArtista(prevState: any, formData: FormData): Promise<AccionResultado> {
+  // Simulamos el tiempo de carga del servidor
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  return { success: true };
+}
+
 export async function eliminarArtista(id: number): Promise<AccionResultado> {
+  // Simulamos el tiempo de carga del servidor
   await new Promise((resolve) => setTimeout(resolve, 800));
   
-  // Simulamos lógica de negocio
   if (id === 999) {
     return { success: false, error: "No se puede eliminar un artista con contratos vigentes." };
   }
