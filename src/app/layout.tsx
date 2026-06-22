@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "sonner";
+import { Toaster } from "sonner"; 
 
 const inter = Inter({ subsets: ["latin"] });
 
+// Configuración de Branding para la pestaña del navegador
 export const metadata: Metadata = {
-  title: "Colmax Record | Gestión Operativa",
-  description: "Sistema de control operativo para la disquera Colmax",
+  title: "Colmax Record | Sistema Operativo",
+  description: "Plataforma de gestión administrativa y operativa para Colmax Record.",
 };
 
 export default function RootLayout({
@@ -18,9 +19,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
+        {/* El Toaster es el componente que permite que tus notificaciones 
+            de éxito aparezcan en la esquina superior derecha */}
+        <Toaster richColors position="top-right" />
         {children}
-        {/* Contenedor global de alertas Toast para todo el sistema */}
-        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

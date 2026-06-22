@@ -1,9 +1,10 @@
 import { getLiquidaciones } from "./actions"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { BotonPagar } from "./boton-pagar"
 
 export default async function LiquidacionesPage() {
   const liquidaciones = await getLiquidaciones()
@@ -45,9 +46,14 @@ export default async function LiquidacionesPage() {
                     <Badge variant={l.estado === 'Pagado' ? 'default' : 'destructive'}>{l.estado}</Badge>
                   </TableCell>
                   <TableCell>
-                    <Button variant="outline" size="sm" disabled={l.estado === 'Pagado'} className="gap-2">
-                      <CheckCircle size={14} /> {l.estado === 'Pagado' ? 'Liquidado' : 'Pagar'}
-                    </Button>
+                    {/* Condición: Si ya vino pagado de la base de datos, mostramos el botón bloqueado. Si no, mostramos nuestro botón dinámico */}
+                    {l.estado === 'Pagado' ? (
+                       <Button variant="outline" size="sm" disabled className="gap-2 text-muted-foreground">
+                         <CheckCircle size={14} /> Liquidado
+                       </Button>
+                    ) : (
+                       <BotonPagar artista={l.artista} monto={l.total} />
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

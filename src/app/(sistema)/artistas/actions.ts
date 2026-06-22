@@ -1,8 +1,5 @@
 'use server'
-
-// IMPORTANTE: Comentamos Prisma para que no intente conectarse a SQL Server
-// import { prisma } from "@/lib/prisma" 
-
+ 
 // 1. Simulamos la lectura de datos
 export async function getArtistas() {
   // Devolvemos datos "quemados" solo para ver el diseño en Netlify
