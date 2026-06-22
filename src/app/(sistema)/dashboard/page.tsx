@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getDashboardStats } from "@/lib/dashboard-data"
-import { Users, FileWarning, DollarSign, TrendingUp, Music2, Disc } from "lucide-react"
+import { Users, FileWarning, DollarSign, TrendingUp, Disc } from "lucide-react"
 
 export default async function DashboardPage() {
   const stats = await getDashboardStats()
@@ -12,7 +12,7 @@ export default async function DashboardPage() {
         <p className="text-muted-foreground">Bienvenido al sistema operativo de Colmax Record.</p>
       </div>
 
-      {/* Fila de KPIs (Tarjetas Principales) - Req. 111 */}
+      {/* Fila de KPIs (Tarjetas Principales) */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="border-l-4 border-l-primary shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -50,7 +50,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      {/* Gráficas de Distribución (Req. 113 y 114) */}
+      {/* Gráficas de Distribución y Accesos Directos */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
           <CardHeader>
