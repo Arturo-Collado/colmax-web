@@ -1,43 +1,26 @@
 'use server'
- 
-// 1. Simulamos la lectura de datos
+
+// Definimos la estructura exacta que retorna la acción
+export interface AccionResultado {
+  success: boolean;
+  error?: string;
+}
+
 export async function getArtistas() {
-  // Devolvemos datos "quemados" solo para ver el diseño en Netlify
   return [
-    { 
-      id_artista: 1, 
-      nombre_artistico: "DJ Nova", 
-      nombre_real: "Carlos Méndez", 
-      genero_musical: "Electrónica", 
-      estado: "Activo" 
-    },
-    { 
-      id_artista: 2, 
-      nombre_artistico: "The Vipers", 
-      nombre_real: "Banda", 
-      genero_musical: "Rock", 
-      estado: "Inactivo" 
-    },
-    { 
-      id_artista: 3, 
-      nombre_artistico: "Luna", 
-      nombre_real: "Ana Silva", 
-      genero_musical: "Pop", 
-      estado: "Activo" 
-    }
+    { id: 1, nombre: "DJ Nova", genero: "Urbano", contratos: 1 },
+    { id: 2, nombre: "Luna", genero: "Pop", contratos: 1 },
+    { id: 3, nombre: "The Vipers", genero: "Rock", contratos: 0 }
   ];
 }
 
-// 2. Simulamos el guardado (no hará nada real, pero la pantalla creerá que sí)
-export async function guardarArtista(prevState: any, formData: FormData) {
-  // Simulamos un retraso de 1 segundo para que se vea la animación de "Guardando..."
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+export async function eliminarArtista(id: number): Promise<AccionResultado> {
+  await new Promise((resolve) => setTimeout(resolve, 800));
   
-  return { success: true, message: "Simulación: Artista guardado correctamente (Modo Diseño)." };
-}
-
-// 3. Simulamos la eliminación
-export async function eliminarArtista(id: number) {
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  // Simulamos lógica de negocio
+  if (id === 999) {
+    return { success: false, error: "No se puede eliminar un artista con contratos vigentes." };
+  }
+  
   return { success: true };
 }

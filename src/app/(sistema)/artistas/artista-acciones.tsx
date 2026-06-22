@@ -1,43 +1,41 @@
 'use client'
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Trash, Edit } from "lucide-react"
-import { eliminarArtista } from "./actions"
+import { Trash2, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { eliminarArtista } from "./actions"
 
-export function ArtistaAcciones({ id, nombre }: { id: number, nombre: string }) {
-  
+export function ArtistaAcciones({ id }: { id: number }) {
+  const [isPending, setIsPending] = useState(false)
+
   const handleEliminar = async () => {
-    if (window.confirm(`¿Estás seguro de que deseas desactivar a ${nombre}?`)) {
+    setIsPending(true)
+    try {
       const resultado = await eliminarArtista(id)
-      
-      if (resultado.error) {
+
+      // Validación tipada que satisface a TypeScript
+      if (resultado && resultado.success === false && resultado.error) {
         toast.error(resultado.error)
       } else {
         toast.success("Artista dado de baja correctamente.")
       }
+    } catch (err) {
+      toast.error("Error al procesar la solicitud.")
+    } finally {
+      setIsPending(false)
     }
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Abrir menú</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => alert("¡Aquí conectaremos el modal de edición!")}>
-          <Edit className="mr-2 h-4 w-4" />
-          Editar
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleEliminar} className="text-red-600 focus:text-red-600">
-          <Trash className="mr-2 h-4 w-4" />
-          Dar de baja
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button 
+      variant="ghost" 
+      size="sm" 
+      onClick={handleEliminar} 
+      disabled={isPending}
+      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+    >
+      {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+    </Button>
   )
 }
