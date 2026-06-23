@@ -1,4 +1,4 @@
-import { getLiquidaciones } from "./actions"
+import { getVentas } from './actions'; 
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { BotonPagar } from "./boton-pagar"
 
 export default async function LiquidacionesPage() {
-  const liquidaciones = await getLiquidaciones()
+  // Obtenemos los datos reales de Supabase
+  const ventas = await getVentas();
 
   return (
     <div className="space-y-6">
@@ -24,36 +25,24 @@ export default async function LiquidacionesPage() {
             <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead>Folio</TableHead>
-                <TableHead>Artista</TableHead>
-                <TableHead>Reproducciones</TableHead>
-                <TableHead>Tasa (NIO)</TableHead>
-                <TableHead>Total a Pagar</TableHead>
-                <TableHead>Estado</TableHead>
+                <TableHead>Detalle/Tipo</TableHead>
+                <TableHead>Ganancia</TableHead>
+                <TableHead>Fecha</TableHead>
                 <TableHead>Acción</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {liquidaciones.map((l) => (
-                <TableRow key={l.id}>
-                  <TableCell>#{l.id}</TableCell>
-                  <TableCell className="font-bold">{l.artista}</TableCell>
-                  <TableCell>{l.reproducciones.toLocaleString()}</TableCell>
-                  <TableCell>{l.tasa}</TableCell>
+              {ventas.map((l: any) => (
+                <TableRow key={l.id_venta}>
+                  <TableCell>#{l.id_venta}</TableCell>
+                  <TableCell className="font-bold">{l.tipo}</TableCell>
                   <TableCell className="font-mono font-bold text-red-600">
-                    {new Intl.NumberFormat('es-NI', { style: 'currency', currency: 'NIO' }).format(l.total)}
+                    {new Intl.NumberFormat('es-NI', { style: 'currency', currency: 'NIO' }).format(Number(l.ganancia))}
                   </TableCell>
+                  <TableCell>{new Date(l.fecha_evento).toLocaleDateString()}</TableCell>
                   <TableCell>
-                    <Badge variant={l.estado === 'Pagado' ? 'default' : 'destructive'}>{l.estado}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {/* Condición: Si ya vino pagado de la base de datos, mostramos el botón bloqueado. Si no, mostramos nuestro botón dinámico */}
-                    {l.estado === 'Pagado' ? (
-                       <Button variant="outline" size="sm" disabled className="gap-2 text-muted-foreground">
-                         <CheckCircle size={14} /> Liquidado
-                       </Button>
-                    ) : (
-                       <BotonPagar artista={l.artista} monto={l.total} />
-                    )}
+                    {/* Aquí puedes mantener tu lógica de pago */}
+                    <BotonPagar artista={l.tipo} monto={Number(l.ganancia)} />
                   </TableCell>
                 </TableRow>
               ))}
