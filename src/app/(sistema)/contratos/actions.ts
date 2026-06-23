@@ -1,11 +1,15 @@
 'use server'
 
 import { PrismaClient } from '@prisma/client'
+import { Pool } from 'pg'
+import { PrismaPg } from '@prisma/adapter-pg'
 import { revalidatePath } from 'next/cache'
 
-const prisma = new PrismaClient()
+// Conexión nativa de alto rendimiento
+const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+const adapter = new PrismaPg(pool)
+const prisma = new PrismaClient({ adapter })
 
-// CORRECCIÓN CLAVE: Agregamos "message?: string" para que Netlify apruebe el tipado
 export interface AccionResultado {
   success: boolean;
   error?: string;
@@ -45,7 +49,6 @@ export async function guardarContrato(prevState: any, formData: FormData): Promi
     });
 
     revalidatePath('/contratos');
-    // CORRECCIÓN CLAVE: Enviamos el message de regreso al formulario
     return { success: true, message: "Contrato registrado exitosamente." };
   } catch (error) {
     console.error("Error al guardar contrato:", error);
