@@ -5,14 +5,15 @@ import { revalidatePath } from 'next/cache'
 
 const prisma = new PrismaClient()
 
+// CORRECCIÓN CLAVE: Agregamos "message?: string" para que Netlify apruebe el tipado
 export interface AccionResultado {
   success: boolean;
   error?: string;
+  message?: string; 
 }
 
 export async function getContratos() {
   try {
-    // Aquí incluimos los datos del artista relacionado para que puedas mostrar su nombre en la tabla
     return await prisma.contrato.findMany({
       include: { artista: true },
       orderBy: { id_contrato: 'desc' }
@@ -44,7 +45,8 @@ export async function guardarContrato(prevState: any, formData: FormData): Promi
     });
 
     revalidatePath('/contratos');
-    return { success: true };
+    // CORRECCIÓN CLAVE: Enviamos el message de regreso al formulario
+    return { success: true, message: "Contrato registrado exitosamente." };
   } catch (error) {
     console.error("Error al guardar contrato:", error);
     return { success: false, error: "Error al guardar en la base de datos." };
@@ -55,7 +57,7 @@ export async function eliminarContrato(id: number): Promise<AccionResultado> {
   try {
     await prisma.contrato.delete({ where: { id_contrato: id } });
     revalidatePath('/contratos');
-    return { success: true };
+    return { success: true, message: "Contrato eliminado correctamente." };
   } catch (error) {
     return { success: false, error: "No se pudo eliminar el registro." };
   }

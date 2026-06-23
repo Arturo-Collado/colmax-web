@@ -5,7 +5,12 @@ import { revalidatePath } from 'next/cache'
 
 const prisma = new PrismaClient()
 
-// Esta es la función que tu page.tsx está buscando
+export interface AccionResultado {
+  success: boolean;
+  error?: string;
+  message?: string;
+}
+
 export async function getVentas() {
   try {
     return await prisma.venta.findMany({
@@ -17,23 +22,38 @@ export async function getVentas() {
   }
 }
 
-export async function guardarVenta(prevState: any, formData: FormData) {
+export async function guardarVenta(prevState: any, formData: FormData): Promise<AccionResultado> {
   try {
     const tipo = formData.get('tipo') as string;
     const ganancia = Number(formData.get('ganancia'));
     const fecha_evento = formData.get('fecha_evento') as string;
 
+    if (!tipo || isNaN(ganancia)) {
+      return { success: false, error: "Datos inválidos." };
+    }
+
     await prisma.venta.create({
       data: {
-        tipo,
-        ganancia,
+        tipo: tipo,
+        ganancia: ganancia,
         fecha_evento: fecha_evento ? new Date(fecha_evento) : new Date()
       }
     });
 
-    revalidatePath('/liquidaciones');
-    return { success: true };
+    revalidatePath('/liquidaciones'); 
+    return { success: true, message: "Venta registrada exitosamente." };
   } catch (error) {
-    return { success: false, error: "Error al guardar." };
+    console.error("Error al guardar venta:", error);
+    return { success: false, error: "Error al guardar en la base de datos." };
+  }
+}
+
+export async function eliminarVenta(id: number): Promise<AccionResultado> {
+  try {
+    await prisma.venta.delete({ where: { id_venta: id } });
+    revalidatePath('/liquidaciones');
+    return { success: true, message: "Venta eliminada." };
+  } catch (error) {
+    return { success: false, error: "No se pudo eliminar el registro." };
   }
 }
