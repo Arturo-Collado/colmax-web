@@ -1,15 +1,62 @@
 'use server'
 
-export async function getContratos() {
-  return [
-    { id_contrato: 101, artista: "DJ Nova", fecha_inicio: "15 Ene 2024", fecha_fin: "15 Ene 2025", estado: "Vigente" },
-    { id_contrato: 102, artista: "The Vipers", fecha_inicio: "10 May 2022", fecha_fin: "10 May 2023", estado: "Vencido" },
-    { id_contrato: 103, artista: "Luna", fecha_inicio: "01 Mar 2024", fecha_fin: "01 Mar 2026", estado: "Vigente" }
-  ];
+import { PrismaClient } from '@prisma/client'
+import { revalidatePath } from 'next/cache'
+
+const prisma = new PrismaClient()
+
+export interface AccionResultado {
+  success: boolean;
+  error?: string;
 }
 
-export async function guardarContrato(prevState: any, formData: FormData) {
-  // Simulamos carga de 1 segundo para la UX
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return { success: true, message: "Contrato registrado y vinculado correctamente." };
+export async function getContratos() {
+  try {
+    // Aquí incluimos los datos del artista relacionado para que puedas mostrar su nombre en la tabla
+    return await prisma.contrato.findMany({
+      include: { artista: true },
+      orderBy: { id_contrato: 'desc' }
+    });
+  } catch (error) {
+    console.error("Error obteniendo contratos:", error);
+    return [];
+  }
+}
+
+export async function guardarContrato(prevState: any, formData: FormData): Promise<AccionResultado> {
+  try {
+    const id_artista = Number(formData.get('id_artista'));
+    const fecha_de_inicio = formData.get('fecha_de_inicio') as string;
+    const fecha_de_finalizacion = formData.get('fecha_de_finalizacion') as string;
+    const estado = formData.get('estado') as string || "Vigente";
+
+    if (!id_artista || !fecha_de_inicio || !fecha_de_finalizacion) {
+      return { success: false, error: "Faltan datos obligatorios." };
+    }
+
+    await prisma.contrato.create({
+      data: {
+        id_artista: id_artista,
+        fecha_de_inicio: new Date(fecha_de_inicio),
+        fecha_de_finalizacion: new Date(fecha_de_finalizacion),
+        estado: estado
+      }
+    });
+
+    revalidatePath('/contratos');
+    return { success: true };
+  } catch (error) {
+    console.error("Error al guardar contrato:", error);
+    return { success: false, error: "Error al guardar en la base de datos." };
+  }
+}
+
+export async function eliminarContrato(id: number): Promise<AccionResultado> {
+  try {
+    await prisma.contrato.delete({ where: { id_contrato: id } });
+    revalidatePath('/contratos');
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: "No se pudo eliminar el registro." };
+  }
 }
