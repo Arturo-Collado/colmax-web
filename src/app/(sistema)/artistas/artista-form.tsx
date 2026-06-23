@@ -14,9 +14,14 @@ export function ArtistaFormModal() {
   const [state, formAction, isPending] = useActionState(guardarArtista, null)
 
   useEffect(() => {
+    // Si la acción fue un éxito
     if (state?.success) {
-      toast.success("Artista registrado correctamente.")
+      toast.success(state.message || "Artista registrado correctamente.")
       setOpen(false)
+    } 
+    // Si la acción devolvió un error (ej. faltan campos) lo mostramos en pantalla
+    else if (state?.error) {
+      toast.error(state.error)
     }
   }, [state])
 
@@ -31,14 +36,25 @@ export function ArtistaFormModal() {
           <DialogDescription>Completa los datos del artista para el catálogo.</DialogDescription>
         </DialogHeader>
         <form action={formAction} className="grid gap-4 py-4">
+          
+          {/* CAMPO 1: nombre_artistico */}
           <div className="grid gap-2">
-            <Label htmlFor="nombre">Nombre del Artista</Label>
-            <Input id="nombre" name="nombre" required placeholder="Ej. DJ Nova" />
+            <Label htmlFor="nombre_artistico">Nombre Artístico</Label>
+            <Input id="nombre_artistico" name="nombre_artistico" required placeholder="Ej. DJ Nova" />
           </div>
+
+          {/* CAMPO 2: nombre_real (Este faltaba y es obligatorio para Supabase) */}
           <div className="grid gap-2">
-            <Label htmlFor="genero">Género Musical</Label>
-            <Input id="genero" name="genero" required placeholder="Ej. Urbano" />
+            <Label htmlFor="nombre_real">Nombre Real</Label>
+            <Input id="nombre_real" name="nombre_real" required placeholder="Ej. Carlos Mendoza" />
           </div>
+
+          {/* CAMPO 3: genero_musical */}
+          <div className="grid gap-2">
+            <Label htmlFor="genero_musical">Género Musical</Label>
+            <Input id="genero_musical" name="genero_musical" required placeholder="Ej. Urbano" />
+          </div>
+
           <Button type="submit" disabled={isPending}>
             {isPending ? <Loader2 className="animate-spin mr-2" size={16} /> : "Guardar Artista"}
           </Button>
