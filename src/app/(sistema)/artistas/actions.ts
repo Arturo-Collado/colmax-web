@@ -5,7 +5,6 @@ import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { revalidatePath } from 'next/cache'
 
-// Conexión nativa de alto rendimiento
 const pool = new Pool({ connectionString: process.env.DATABASE_URL })
 const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
@@ -49,9 +48,11 @@ export async function guardarArtista(prevState: any, formData: FormData): Promis
 
     revalidatePath('/artistas');
     return { success: true, message: "Artista guardado con éxito." };
-  } catch (error) {
-    console.error("Error al guardar:", error);
-    return { success: false, error: "Hubo un problema al guardar en la base de datos." };
+  } catch (error: any) {
+    // AQUÍ ESTÁ LA MAGIA: Ahora devolverá el error exacto de Supabase a tu pantalla
+    const mensajeError = error?.message || error?.name || JSON.stringify(error);
+    console.error("ERROR REAL DB:", error);
+    return { success: false, error: `Fallo en DB: ${mensajeError}` };
   }
 }
 
@@ -63,7 +64,7 @@ export async function eliminarArtista(id: number): Promise<AccionResultado> {
     
     revalidatePath('/artistas');
     return { success: true, message: "Artista eliminado." };
-  } catch (error) {
-    return { success: false, error: "No se pudo eliminar el registro." };
+  } catch (error: any) {
+    return { success: false, error: `Fallo al eliminar: ${error?.message || "Desconocido"}` };
   }
 }
