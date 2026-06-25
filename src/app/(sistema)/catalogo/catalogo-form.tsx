@@ -17,6 +17,8 @@ export function CatalogoFormModal() {
     if (state?.success) {
       toast.success(state.message)
       setOpen(false)
+    } else if (state?.error) {
+      toast.error(state.error) // Agregamos esto para que te avise si hay un error
     }
   }, [state])
 
@@ -46,8 +48,9 @@ export function CatalogoFormModal() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="anio">Año</Label>
-              <Input id="anio" name="anio" type="number" min="2000" max="2030" required disabled={isPending} />
+              {/* CORRECCIÓN AQUÍ: Cambiamos htmlFor, id y name a "lanzamiento" */}
+              <Label htmlFor="lanzamiento">Año de Lanzamiento</Label>
+              <Input id="lanzamiento" name="lanzamiento" type="number" min="2000" max="2030" required disabled={isPending} />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="pistas">Cant. de Pistas</Label>
