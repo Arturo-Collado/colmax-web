@@ -41,3 +41,24 @@ model Venta {
   ganancia     Decimal  @db.Decimal(18, 2)
   fecha_evento DateTime @default(now())
 }
+
+// ---- NUEVAS TABLAS PARA EL RESTO DEL SISTEMA ----
+
+model Compositor {
+  id_compositor Int      @id @default(autoincrement())
+  nombre        String
+  apellido      String
+  correo        String
+  regalias      String
+  fecha_creacion DateTime @default(now())
+}
+
+model Album {
+  id_album      Int      @id @default(autoincrement())
+  titulo        String
+  artista       String
+  lanzamiento   String
+  pistas        Int
+  estado        String   @default("Publicado")
+  fecha_creacion DateTime @default(now())
+}

@@ -17,6 +17,8 @@ export function ContratoFormModal() {
     if (state?.success) {
       toast.success(state.message)
       setOpen(false)
+    } else if (state?.error) {
+      toast.error(state.error)
     }
   }, [state])
 
@@ -32,22 +34,23 @@ export function ContratoFormModal() {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Registrar Contrato</DialogTitle>
-          <DialogDescription>Establece las fechas de inicio y vencimiento del acuerdo.</DialogDescription>
+          <DialogDescription>Asegúrate de poner el ID numérico del artista ya registrado.</DialogDescription>
         </DialogHeader>
         
         <form action={formAction} className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="artista">Nombre del Artista</Label>
-            <Input id="artista" name="artista" placeholder="Ej. DJ Nova" required disabled={isPending} />
+            <Label htmlFor="id_artista">ID del Artista</Label>
+            {/* OJO A ESTE CAMBIO: Debe ser el ID (número) del artista porque es una tabla relacional */}
+            <Input id="id_artista" type="number" name="id_artista" placeholder="Ej. 1" required disabled={isPending} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="fecha_inicio">Fecha de Inicio</Label>
-              <Input id="fecha_inicio" type="date" name="fecha_inicio" required disabled={isPending} />
+              <Label htmlFor="fecha_de_inicio">Fecha de Inicio</Label>
+              <Input id="fecha_de_inicio" type="date" name="fecha_de_inicio" required disabled={isPending} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="fecha_fin">Fecha de Fin</Label>
-              <Input id="fecha_fin" type="date" name="fecha_fin" required disabled={isPending} />
+              <Label htmlFor="fecha_de_finalizacion">Fecha de Fin</Label>
+              <Input id="fecha_de_finalizacion" type="date" name="fecha_de_finalizacion" required disabled={isPending} />
             </div>
           </div>
           <Button type="submit" className="mt-4" disabled={isPending}>

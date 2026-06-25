@@ -1,14 +1,38 @@
 'use server'
 
+import { PrismaClient } from '@prisma/client'
+import { Pool } from 'pg'
+import { PrismaPg } from '@prisma/adapter-pg'
+import { revalidatePath } from 'next/cache'
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+const adapter = new PrismaPg(pool)
+const prisma = new PrismaClient({ adapter })
+
 export async function getAlbumes() {
-  return [
-    { id_album: 1, titulo: "Noches Urbanas", artista: "DJ Nova", lanzamiento: "2024", pistas: 12, estado: "Publicado" },
-    { id_album: 2, titulo: "Ecos del Ayer", artista: "Luna", lanzamiento: "2025", pistas: 8, estado: "En Producción" },
-    { id_album: 3, titulo: "Resonancia", artista: "The Vipers", lanzamiento: "2023", pistas: 10, estado: "Publicado" }
-  ];
+  try {
+    return await prisma.album.findMany({ orderBy: { id_album: 'desc' } });
+  } catch (error) {
+    return [];
+  }
 }
 
 export async function guardarAlbum(prevState: any, formData: FormData) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return { success: true, message: "Nuevo álbum añadido al catálogo de la disquera." };
+  try {
+    const titulo = formData.get('titulo') as string;
+    const artista = formData.get('artista') as string;
+    const lanzamiento = formData.get('lanzamiento') as string;
+    const pistas = Number(formData.get('pistas'));
+
+    if (!titulo || !artista) return { success: false, error: "Título y artista obligatorios." };
+
+    await prisma.album.create({
+      data: { titulo, artista, lanzamiento, pistas: pistas || 1, estado: "Publicado" }
+    });
+
+    revalidatePath('/catalogo');
+    return { success: true, message: "Álbum registrado con éxito." };
+  } catch (error: any) {
+    return { success: false, error: `Fallo en DB: ${error.message}` };
+  }
 }
