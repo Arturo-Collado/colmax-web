@@ -2,14 +2,15 @@ import { getCompositores } from "./actions"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { BotonExportarPDF } from "@/components/boton-exportar-pdf"
-import { CompositorFormModal } from "./compositor-form" // <-- Importamos el Modal
+import { CompositorFormModal } from "./compositor-form" 
 
 export default async function CompositoresPage() {
   const compositores = await getCompositores()
 
   // Preparamos los datos crudos para inyectarlos en el PDF
+  // CORRECCIÓN: Cambiamos c.id por c.id_compositor
   const datosParaPDF = compositores.map(c => [
-    c.id.toString(), 
+    c.id_compositor.toString(), 
     c.nombre, 
     c.apellido, 
     c.correo, 
@@ -30,7 +31,6 @@ export default async function CompositoresPage() {
             datos={datosParaPDF}
             nombreArchivo="Catalogo_Compositores"
           />
-          {/* Aquí reemplazamos el botón viejo por el Modal */}
           <CompositorFormModal />
         </div>
       </div>
@@ -49,8 +49,9 @@ export default async function CompositoresPage() {
             </TableHeader>
             <TableBody>
               {compositores.map((c) => (
-                <TableRow key={c.id}>
-                  <TableCell>#{c.id}</TableCell>
+                // CORRECCIÓN: Cambiamos c.id por c.id_compositor en las llaves y celdas
+                <TableRow key={c.id_compositor}>
+                  <TableCell>#{c.id_compositor}</TableCell>
                   <TableCell className="font-bold">{c.nombre}</TableCell>
                   <TableCell>{c.apellido}</TableCell>
                   <TableCell>{c.correo}</TableCell>
